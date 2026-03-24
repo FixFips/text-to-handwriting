@@ -281,11 +281,16 @@ body {
   padding-bottom: 30px;
   height: 100%;
   overflow: hidden;
-  font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1;
-  -webkit-font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1;
+  font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1, "rclt" 1, "init" 1, "medi" 1, "fina" 1, "isol" 1;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1, "rclt" 1, "init" 1, "medi" 1, "fina" 1, "isol" 1;
   font-variant-ligatures: common-ligatures contextual;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+.page-text[dir="rtl"] {
+  unicode-bidi: plaintext;
+  font-kerning: auto;
 }
 
 .page-text p {
