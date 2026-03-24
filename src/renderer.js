@@ -6,19 +6,13 @@ function seededRandom(seed) {
   };
 }
 
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return [r, g, b];
-}
-
-function varyInk(rgb, rng, amount) {
-  return [
-    Math.max(0, Math.min(255, rgb[0] + (rng() - 0.5) * amount)),
-    Math.max(0, Math.min(255, rgb[1] + (rng() - 0.5) * amount)),
-    Math.max(0, Math.min(255, rgb[2] + (rng() - 0.5) * amount)),
-  ];
+function smoothNoise(rng, t, scale) {
+  const i = Math.floor(t / scale);
+  const f = (t / scale) - i;
+  const smooth = f * f * (3 - 2 * f);
+  const a = ((i * 127.1 + rng() * 0.001) % 1);
+  const b = (((i + 1) * 127.1 + rng() * 0.001) % 1);
+  return (a * (1 - smooth) + b * smooth) - 0.5;
 }
 
 function tokenize(text) {
@@ -140,11 +134,9 @@ export function drawPaper(ctx, w, h, options) {
 }
 
 export function drawText(ctx, w, h, options) {
-  const { text, font, paper, ink, fontSize, lineHeight, wobble, letterSpacing, inkWeight, marginLeft, seed, isRTL } = options;
+  const { text, font, paper, ink, fontSize, lineHeight, wobble, letterSpacing, marginLeft, seed, isRTL } = options;
   const rng = seededRandom(seed);
   const inkColor = paper.inkColor || ink.color;
-  const inkRgb = hexToRgb(inkColor);
-  const weight = inkWeight || 0.65;
   const pad = 40;
   const startX = isRTL ? (paper.margin ? w - marginLeft : w - pad) : (paper.margin ? marginLeft : pad);
   const startY = 58;
@@ -157,16 +149,13 @@ export function drawText(ctx, w, h, options) {
   let cy = startY;
   let lineIdx = 0;
   let charIdx = 0;
-  let totalChars = 0;
 
   const lineSlopes = [];
   const lineDriftPhases = [];
-  const lineInkFade = [];
   const slopeRng = seededRandom(seed + 200);
   for (let i = 0; i < 50; i++) {
     lineSlopes.push((slopeRng() - 0.5) * 0.008 * wobble);
     lineDriftPhases.push(slopeRng() * Math.PI * 2);
-    lineInkFade.push(0.92 + slopeRng() * 0.08);
   }
 
   function getBaselineDrift(charPos, line) {
@@ -178,46 +167,6 @@ export function drawText(ctx, w, h, options) {
 
   function getLineSlope(line) {
     return lineSlopes[line % 50] || 0;
-  }
-
-  function drawChar(ch, x, y, sz, rot, alpha, isWord) {
-    const varied = varyInk(inkRgb, rng, 18);
-    const col = `rgb(${varied[0]|0},${varied[1]|0},${varied[2]|0})`;
-
-    const fadeProgress = (totalChars % 80) / 80;
-    const inkFade = lineInkFade[lineIdx % 50] - fadeProgress * 0.08;
-    const finalAlpha = alpha * Math.max(0.65, inkFade) * weight;
-
-    const pressure = 0.5 + rng() * 0.5;
-    const blur = 0.1 + pressure * wobble * 0.2;
-
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(rot);
-
-    ctx.font = `${sz}px '${font}', cursive, sans-serif`;
-    ctx.textAlign = isWord && isRTL ? "right" : "left";
-
-    ctx.fillStyle = col;
-    ctx.globalAlpha = finalAlpha * 0.25;
-    ctx.shadowColor = col;
-    ctx.shadowBlur = blur + 0.8;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.fillText(ch, 0, 0);
-
-    ctx.shadowBlur = blur * 0.3;
-    ctx.globalAlpha = finalAlpha * 0.75;
-    ctx.fillText(ch, 0, 0);
-
-    ctx.shadowBlur = 0;
-    ctx.shadowColor = "transparent";
-    ctx.globalAlpha = finalAlpha * 0.1;
-    const ox = (rng() - 0.5) * 0.6;
-    const oy = (rng() - 0.5) * 0.6;
-    ctx.fillText(ch, ox, oy);
-
-    ctx.restore();
   }
 
   tokens.forEach((token) => {
@@ -233,7 +182,6 @@ export function drawText(ctx, w, h, options) {
       const spaceW = fontSize * (0.35 + rng() * 0.1);
       cx += isRTL ? -spaceW : spaceW;
       charIdx += 1;
-      totalChars += 1;
       return;
     }
 
@@ -256,17 +204,27 @@ export function drawText(ctx, w, h, options) {
       const drift = getBaselineDrift(charIdx, lineIdx);
       const slopeOffset = (startX - cx) * slope;
       const rot = (rng() - 0.5) * wobble * 0.012;
-      const alpha = 0.75 + rng() * 0.2;
+      const alpha = 0.85 + rng() * 0.15;
+      const blur = 0.2 + rng() * wobble * 0.3;
 
+      ctx.save();
       ctx.font = `${sz}px '${font}', cursive, sans-serif`;
       const mw = ctx.measureText(token).width;
-
-      drawChar(token, cx, cy + drift + slopeOffset, sz, rot, alpha, true);
+      ctx.translate(cx, cy + drift + slopeOffset);
+      ctx.rotate(rot);
+      ctx.fillStyle = inkColor;
+      ctx.globalAlpha = alpha;
+      ctx.shadowColor = inkColor;
+      ctx.shadowBlur = blur;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.textAlign = "right";
+      ctx.fillText(token, 0, 0);
+      ctx.restore();
 
       cx -= mw + letterSpacing * token.length + fontSize * 0.3;
       charIdx += token.length;
-      totalChars += token.length;
-      for (let i = 0; i < token.length; i++) { rng(); }
+      for (let i = 0; i < token.length; i++) { rng(); rng(); }
     } else {
       let prevDrift = getBaselineDrift(charIdx, lineIdx);
 
@@ -277,20 +235,31 @@ export function drawText(ctx, w, h, options) {
         const smoothDrift = prevDrift * 0.3 + drift * 0.7;
         prevDrift = smoothDrift;
 
-        const xFromStart = cx - startX;
+        const xFromStart = isRTL ? (startX - cx) : (cx - startX);
         const slopeOffset = xFromStart * slope;
 
         const rot = (rng() - 0.5) * wobble * 0.012;
-        const alpha = 0.7 + rng() * 0.2;
+        const alpha = 0.83 + rng() * 0.17;
+        const blur = 0.15 + rng() * wobble * 0.35;
 
         ctx.font = `${sz}px '${font}', cursive, sans-serif`;
         const cw = ctx.measureText(ch).width;
 
-        drawChar(ch, cx, cy + smoothDrift + slopeOffset, sz, rot, alpha, false);
+        ctx.save();
+        ctx.translate(cx, cy + smoothDrift + slopeOffset);
+        ctx.rotate(rot);
+        ctx.fillStyle = inkColor;
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = inkColor;
+        ctx.shadowBlur = blur;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.textAlign = "left";
+        ctx.fillText(ch, 0, 0);
+        ctx.restore();
 
         const microShift = (rng() - 0.5) * wobble * 0.3;
         cx += cw + letterSpacing + microShift;
-        totalChars++;
       }
       charIdx += token.length;
       cx += fontSize * 0.25 + (rng() - 0.5) * wobble * 0.5;
