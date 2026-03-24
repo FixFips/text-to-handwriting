@@ -146,7 +146,7 @@ export default function App() {
 
           <div>
             <label style={labelStyle}>{isRTL ? "\u0646\u0645\u0637 \u0627\u0644\u062E\u0637" : "Handwriting Style"}</label>
-            <div className="font-grid" style={{ maxHeight: isRTL ? 320 : "none", overflowY: isRTL ? "auto" : "visible" }}>
+            <div className="font-grid" style={{ maxHeight: 320, overflowY: "auto" }}>
               {currentFonts.map((f) => (
                 <button
                   key={f.name}
