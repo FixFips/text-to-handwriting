@@ -4,14 +4,14 @@ export const LANGUAGES = [
 ];
 
 export const FONTS_EN = [
+  { name: "Homemade Apple", label: "Cursive", url: "https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" },
   { name: "Caveat", label: "Casual", url: "https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" },
   { name: "Dancing Script", label: "Elegant", url: "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" },
+  { name: "Satisfy", label: "Flowing", url: "https://fonts.googleapis.com/css2?family=Satisfy&display=swap" },
   { name: "Indie Flower", label: "Playful", url: "https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" },
   { name: "Kalam", label: "Natural", url: "https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" },
-  { name: "Homemade Apple", label: "Cursive", url: "https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" },
   { name: "Shadows Into Light", label: "Light", url: "https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" },
   { name: "Patrick Hand", label: "Clean", url: "https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" },
-  { name: "Satisfy", label: "Flowing", url: "https://fonts.googleapis.com/css2?family=Satisfy&display=swap" },
 ];
 
 export const FONTS_AR = [
@@ -50,8 +50,8 @@ export const SAMPLE_AR =
   "\u0628\u0633\u0645 \u0627\u0644\u0644\u0647 \u0627\u0644\u0631\u062D\u0645\u0646 \u0627\u0644\u0631\u062D\u064A\u0645\n\n\u0647\u0630\u0627 \u0639\u0631\u0636 \u062A\u0648\u0636\u064A\u062D\u064A \u0644\u0645\u062D\u0648\u0644 \u0627\u0644\u0646\u0635 \u0625\u0644\u0649 \u062E\u0637 \u0627\u0644\u064A\u062F. \u0627\u0643\u062A\u0628 \u0623\u0648 \u0627\u0644\u0635\u0642 \u0627\u0644\u0646\u0635 \u0641\u064A \u0627\u0644\u0644\u0648\u062D\u0629 \u0627\u0644\u064A\u0633\u0631\u0649 \u0648\u0634\u0627\u0647\u062F\u0647 \u064A\u062A\u062D\u0648\u0644 \u0625\u0644\u0649 \u062E\u0637 \u064A\u062F \u0648\u0627\u0642\u0639\u064A \u0639\u0644\u0649 \u0647\u0630\u0647 \u0627\u0644\u0648\u0631\u0642\u0629.\n\n\u064A\u0645\u0643\u0646\u0643 \u062A\u062E\u0635\u064A\u0635 \u0646\u0645\u0637 \u0627\u0644\u062E\u0637 \u0648\u0644\u0648\u0646 \u0627\u0644\u062D\u0628\u0631 \u0648\u0646\u0648\u0639 \u0627\u0644\u0648\u0631\u0642 \u0648\u0627\u0644\u0639\u062F\u064A\u062F \u0645\u0646 \u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u0623\u062E\u0631\u0649 \u0644\u0644\u062D\u0635\u0648\u0644 \u0639\u0644\u0649 \u0627\u0644\u0645\u0638\u0647\u0631 \u0627\u0644\u0645\u062B\u0627\u0644\u064A \u0628\u062E\u0637 \u0627\u0644\u064A\u062F.";
 
 export const DEFAULTS = {
-  en: { fontSize: 22, lineHeight: 36, letterSpacing: -0.5, wobble: 1.8 },
-  ar: { fontSize: 24, lineHeight: 40, letterSpacing: -0.6, wobble: 1.0 },
+  en: { fontSize: 18, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
+  ar: { fontSize: 20, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
 };
 
 export const UI_FONT_AR = "https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap";

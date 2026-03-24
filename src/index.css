@@ -246,20 +246,56 @@ body {
   overflow: auto;
 }
 
-.canvas-wrap {
+.page-wrap {
   border-radius: 6px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
-  line-height: 0;
 }
 
-.canvas-wrap canvas {
+.page {
+  width: 595px;
+  height: 842px;
+  position: relative;
+  overflow: hidden;
   border-radius: 6px;
-  display: block;
+  padding-top: 20px;
+}
+
+.page.margined {
+  padding-top: 20px;
+}
+
+.margin-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1.5px solid #e88888;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.page-text {
+  position: relative;
+  z-index: 2;
+  padding-top: 10px;
+  padding-bottom: 30px;
+  height: 100%;
+  overflow: hidden;
+  font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "clig" 1;
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-text p {
+  margin: 0;
+  padding: 0;
 }
 
 .loading {
-  width: 680px;
-  height: 880px;
+  width: 595px;
+  height: 842px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
+import html2canvas from "html2canvas";
 import { LANGUAGES, FONTS_EN, FONTS_AR, PAPER_STYLES, INK_COLORS, SAMPLE_EN, SAMPLE_AR, DEFAULTS, UI_FONT_AR } from "./config";
-import { drawPaper, drawText } from "./renderer";
 
 function loadFont(url) {
   const link = document.createElement("link");
@@ -17,15 +17,14 @@ export default function App() {
   const [ink, setInk] = useState(INK_COLORS[0]);
   const [fontSize, setFontSize] = useState(DEFAULTS.en.fontSize);
   const [lineHeight, setLineHeight] = useState(DEFAULTS.en.lineHeight);
-  const [wobble, setWobble] = useState(DEFAULTS.en.wobble);
   const [letterSpacing, setLetterSpacing] = useState(DEFAULTS.en.letterSpacing);
-  const [marginLeft] = useState(90);
+  const [wordSpacing, setWordSpacing] = useState(DEFAULTS.en.wordSpacing);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [seed] = useState(42);
-  const canvasRef = useRef(null);
+  const pageRef = useRef(null);
 
   const isRTL = lang.dir === "rtl";
   const currentFonts = isRTL ? FONTS_AR : FONTS_EN;
+  const inkColor = paper.inkColor || ink.color;
 
   useEffect(() => {
     [...FONTS_EN, ...FONTS_AR].forEach((f) => loadFont(f.url));
@@ -39,7 +38,7 @@ export default function App() {
     setFontSize(d.fontSize);
     setLineHeight(d.lineHeight);
     setLetterSpacing(d.letterSpacing);
-    setWobble(d.wobble);
+    setWordSpacing(d.wordSpacing);
 
     if (newLang.id === "ar") {
       setFont(FONTS_AR[0].name);
@@ -50,25 +49,16 @@ export default function App() {
     }
   };
 
-  const renderOptions = { text, font, paper, ink, fontSize, lineHeight, wobble, letterSpacing, marginLeft, seed, isRTL };
-
-  const render = useCallback(() => {
-    if (!fontsLoaded || !canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    const w = canvasRef.current.width;
-    const h = canvasRef.current.height;
-    ctx.clearRect(0, 0, w, h);
-    drawPaper(ctx, w, h, renderOptions);
-    drawText(ctx, w, h, renderOptions);
-  }, [fontsLoaded, renderOptions]);
-
-  useEffect(() => { render(); }, [render]);
-
-  const download = () => {
-    if (!canvasRef.current) return;
+  const download = async () => {
+    if (!pageRef.current) return;
+    const canvas = await html2canvas(pageRef.current, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+    });
     const a = document.createElement("a");
     a.download = "handwritten.png";
-    a.href = canvasRef.current.toDataURL("image/png");
+    a.href = canvas.toDataURL("image/png");
     a.click();
   };
 
@@ -96,11 +86,21 @@ export default function App() {
   });
 
   const sliders = [
-    { label: isRTL ? "\u062D\u062C\u0645 \u0627\u0644\u062E\u0637" : "Font Size", value: fontSize, set: setFontSize, min: 14, max: 40 },
-    { label: isRTL ? "\u0627\u0631\u062A\u0641\u0627\u0639 \u0627\u0644\u0633\u0637\u0631" : "Line Height", value: lineHeight, set: setLineHeight, min: 24, max: 56 },
-    { label: isRTL ? "\u0627\u0647\u062A\u0632\u0627\u0632" : "Wobble", value: wobble, set: setWobble, min: 0, max: 4, step: 0.1 },
-    { label: isRTL ? "\u062A\u0628\u0627\u0639\u062F" : "Spacing", value: letterSpacing, set: setLetterSpacing, min: -2, max: 4, step: 0.1 },
+    { label: isRTL ? "\u062D\u062C\u0645 \u0627\u0644\u062E\u0637" : "Font Size", value: fontSize, set: setFontSize, min: 10, max: 32, step: 1, unit: "pt" },
+    { label: isRTL ? "\u0627\u0631\u062A\u0641\u0627\u0639 \u0627\u0644\u0633\u0637\u0631" : "Line Height", value: lineHeight, set: setLineHeight, min: 1.0, max: 3.0, step: 0.1, unit: "em" },
+    { label: isRTL ? "\u062A\u0628\u0627\u0639\u062F \u0627\u0644\u062D\u0631\u0648\u0641" : "Letter Spacing", value: letterSpacing, set: setLetterSpacing, min: -2, max: 5, step: 0.5, unit: "px" },
+    { label: isRTL ? "\u062A\u0628\u0627\u0639\u062F \u0627\u0644\u0643\u0644\u0645\u0627\u062A" : "Word Spacing", value: wordSpacing, set: setWordSpacing, min: -2, max: 10, step: 0.5, unit: "px" },
   ];
+
+  const paperLineStyle = paper.id === "grid"
+    ? `repeating-linear-gradient(0deg, ${paper.lineColor} 0px, ${paper.lineColor} 1px, transparent 1px, transparent ${lineHeight}em), repeating-linear-gradient(90deg, ${paper.lineColor} 0px, ${paper.lineColor} 1px, transparent 1px, transparent ${lineHeight}em)`
+    : ["ruled", "college", "aged"].includes(paper.id)
+      ? `linear-gradient(${paper.lineColor} 0.05em, transparent 0.1em)`
+      : "none";
+
+  const paperBgSize = paper.id === "grid"
+    ? `${lineHeight}em ${lineHeight}em`
+    : `100% ${lineHeight}em`;
 
   return (
     <div className="app">
@@ -200,11 +200,11 @@ export default function App() {
                   <span style={{ ...labelStyle, marginBottom: 0, fontFamily: isRTL ? "'Noto Naskh Arabic', sans-serif" : "inherit" }}>
                     {s.label}
                   </span>
-                  <span className="slider-value">{Number(s.value).toFixed(s.step ? 1 : 0)}</span>
+                  <span className="slider-value">{Number(s.value).toFixed(s.step < 1 ? 1 : 0)}{s.unit}</span>
                 </div>
                 <input
                   type="range"
-                  min={s.min} max={s.max} step={s.step || 1}
+                  min={s.min} max={s.max} step={s.step}
                   value={s.value}
                   onChange={(e) => s.set(Number(e.target.value))}
                 />
@@ -219,16 +219,45 @@ export default function App() {
         </aside>
 
         <main className="preview">
-          <div className="canvas-wrap">
-            {!fontsLoaded ? (
-              <div className="loading">
-                <div className="spinner" />
-                <span>{isRTL ? "\u062C\u0627\u0631\u064D \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u062E\u0637\u0648\u0637..." : "Loading fonts..."}</span>
+          {!fontsLoaded ? (
+            <div className="loading">
+              <div className="spinner" />
+              <span>{isRTL ? "\u062C\u0627\u0631\u064D \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u062E\u0637\u0648\u0637..." : "Loading fonts..."}</span>
+            </div>
+          ) : (
+            <div className="page-wrap">
+              <div
+                ref={pageRef}
+                className={`page ${paper.margin ? "margined" : ""}`}
+                style={{
+                  background: paper.bg,
+                  backgroundImage: paperLineStyle,
+                  backgroundSize: paperBgSize,
+                }}
+              >
+                {paper.margin && <div className="margin-line" style={{ [isRTL ? "right" : "left"]: 60 }} />}
+                <div
+                  className="page-text"
+                  style={{
+                    fontFamily: `'${font}', cursive, sans-serif`,
+                    fontSize: `${fontSize}pt`,
+                    lineHeight: `${lineHeight}em`,
+                    letterSpacing: `${letterSpacing}px`,
+                    wordSpacing: `${wordSpacing}px`,
+                    color: inkColor,
+                    direction: isRTL ? "rtl" : "ltr",
+                    textAlign: isRTL ? "right" : "left",
+                    paddingLeft: !isRTL && paper.margin ? 70 : 30,
+                    paddingRight: isRTL && paper.margin ? 70 : 30,
+                  }}
+                >
+                  {text.split("\n").map((line, i) => (
+                    <p key={i} style={{ minHeight: `${lineHeight}em` }}>{line || "\u00A0"}</p>
+                  ))}
+                </div>
               </div>
-            ) : (
-              <canvas ref={canvasRef} width={680} height={880} />
-            )}
-          </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
