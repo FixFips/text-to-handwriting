@@ -286,6 +286,8 @@ body {
   font-variant-ligatures: common-ligatures contextual;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  opacity: 0.82;
+  font-weight: 400;
 }
 
 .page-text[dir="rtl"] {

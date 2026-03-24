@@ -35,12 +35,12 @@ export const PAPER_STYLES = [
 ];
 
 export const INK_COLORS = [
-  { id: "blue", color: "#1a3a6a", label: "Blue" },
-  { id: "black", color: "#1a1a2e", label: "Black" },
-  { id: "darkblue", color: "#0d2147", label: "Navy" },
-  { id: "red", color: "#8b1a1a", label: "Red" },
-  { id: "green", color: "#1a5c2a", label: "Green" },
-  { id: "purple", color: "#4a1a6a", label: "Purple" },
+  { id: "blue", color: "#2b4d8a", label: "Blue" },
+  { id: "black", color: "#2a2a3e", label: "Black" },
+  { id: "darkblue", color: "#1a3568", label: "Navy" },
+  { id: "red", color: "#9a3030", label: "Red" },
+  { id: "green", color: "#2a6a3a", label: "Green" },
+  { id: "purple", color: "#5a2a7a", label: "Purple" },
 ];
 
 export const SAMPLE_EN =
@@ -50,8 +50,8 @@ export const SAMPLE_AR =
   "\u0628\u0633\u0645 \u0627\u0644\u0644\u0647 \u0627\u0644\u0631\u062D\u0645\u0646 \u0627\u0644\u0631\u062D\u064A\u0645\n\n\u0647\u0630\u0627 \u0639\u0631\u0636 \u062A\u0648\u0636\u064A\u062D\u064A \u0644\u0645\u062D\u0648\u0644 \u0627\u0644\u0646\u0635 \u0625\u0644\u0649 \u062E\u0637 \u0627\u0644\u064A\u062F. \u0627\u0643\u062A\u0628 \u0623\u0648 \u0627\u0644\u0635\u0642 \u0627\u0644\u0646\u0635 \u0641\u064A \u0627\u0644\u0644\u0648\u062D\u0629 \u0627\u0644\u064A\u0633\u0631\u0649 \u0648\u0634\u0627\u0647\u062F\u0647 \u064A\u062A\u062D\u0648\u0644 \u0625\u0644\u0649 \u062E\u0637 \u064A\u062F \u0648\u0627\u0642\u0639\u064A \u0639\u0644\u0649 \u0647\u0630\u0647 \u0627\u0644\u0648\u0631\u0642\u0629.\n\n\u064A\u0645\u0643\u0646\u0643 \u062A\u062E\u0635\u064A\u0635 \u0646\u0645\u0637 \u0627\u0644\u062E\u0637 \u0648\u0644\u0648\u0646 \u0627\u0644\u062D\u0628\u0631 \u0648\u0646\u0648\u0639 \u0627\u0644\u0648\u0631\u0642 \u0648\u0627\u0644\u0639\u062F\u064A\u062F \u0645\u0646 \u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u0623\u062E\u0631\u0649 \u0644\u0644\u062D\u0635\u0648\u0644 \u0639\u0644\u0649 \u0627\u0644\u0645\u0638\u0647\u0631 \u0627\u0644\u0645\u062B\u0627\u0644\u064A \u0628\u062E\u0637 \u0627\u0644\u064A\u062F.";
 
 export const DEFAULTS = {
-  en: { fontSize: 18, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
-  ar: { fontSize: 20, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
+  en: { fontSize: 15, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
+  ar: { fontSize: 17, lineHeight: 1.5, letterSpacing: 0, wordSpacing: 0 },
 };
 
 export const UI_FONT_AR = "https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap";
