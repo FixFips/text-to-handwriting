@@ -19,6 +19,7 @@ export default function App() {
   const [lineHeight, setLineHeight] = useState(DEFAULTS.en.lineHeight);
   const [wobble, setWobble] = useState(DEFAULTS.en.wobble);
   const [letterSpacing, setLetterSpacing] = useState(DEFAULTS.en.letterSpacing);
+  const [inkWeight, setInkWeight] = useState(DEFAULTS.en.inkWeight);
   const [marginLeft] = useState(90);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [seed] = useState(42);
@@ -39,6 +40,7 @@ export default function App() {
     setFontSize(d.fontSize);
     setLineHeight(d.lineHeight);
     setLetterSpacing(d.letterSpacing);
+    setInkWeight(d.inkWeight);
     setWobble(d.wobble);
 
     if (newLang.id === "ar") {
@@ -50,7 +52,7 @@ export default function App() {
     }
   };
 
-  const renderOptions = { text, font, paper, ink, fontSize, lineHeight, wobble, letterSpacing, marginLeft, seed, isRTL };
+  const renderOptions = { text, font, paper, ink, fontSize, lineHeight, wobble, letterSpacing, inkWeight, marginLeft, seed, isRTL };
 
   const render = useCallback(() => {
     if (!fontsLoaded || !canvasRef.current) return;
@@ -100,6 +102,7 @@ export default function App() {
     { label: isRTL ? "\u0627\u0631\u062A\u0641\u0627\u0639 \u0627\u0644\u0633\u0637\u0631" : "Line Height", value: lineHeight, set: setLineHeight, min: 24, max: 56 },
     { label: isRTL ? "\u0627\u0647\u062A\u0632\u0627\u0632" : "Wobble", value: wobble, set: setWobble, min: 0, max: 4, step: 0.1 },
     { label: isRTL ? "\u062A\u0628\u0627\u0639\u062F" : "Spacing", value: letterSpacing, set: setLetterSpacing, min: -2, max: 4, step: 0.1 },
+    { label: isRTL ? "\u062B\u0642\u0644 \u0627\u0644\u062D\u0628\u0631" : "Ink Weight", value: inkWeight, set: setInkWeight, min: 0.3, max: 1.0, step: 0.05 },
   ];
 
   return (
